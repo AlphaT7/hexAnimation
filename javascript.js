@@ -7,14 +7,15 @@ const hexSideLength = 55;
 const hexAngle = toRadians(30);
 let hexRadius = 85;
 let focus = 0;
+let expand = false;
 let hexProperties = [
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
-  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
+  { r: hexRadius, opacity: 1, expand: false },
 ];
 let hexArray = [];
 let hexSpaceBetween = 12;
@@ -76,28 +77,54 @@ function toRadians(angle) {
 
 function drawHexagon() {
   let gridCoordinates = [];
+  if (!expand) {
+    hexGrid.coordinates.forEach((center, i) => {
+      hexProperties[i].r =
+        hexProperties[i].r >= hexRadius / 2 && focus == i
+          ? hexProperties[i].r - 3
+          : hexProperties[i].r;
+
+      hexProperties[i].opacity =
+        hexProperties[i].opacity > 0 && focus == i
+          ? hexProperties[i].opacity - 0.08
+          : hexProperties[i].opacity < 0.5 && focus == i
+          ? 0
+          : hexProperties[i].opacity;
+
+      focus =
+        hexProperties[i].opacity > 0 && focus == i && i < 6
+          ? focus
+          : hexProperties[i].opacity <= 0 && focus == i && i < 6
+          ? focus + 1
+          : 0;
+
+      expand = hexProperties[6].opacity == 0 ? true : false;
+    });
+  } else {
+    hexGrid.coordinates.forEach((center, i) => {
+      hexProperties[i].r =
+        hexProperties[i].r < hexRadius && focus == i
+          ? hexProperties[i].r + 3
+          : hexProperties[i].r;
+
+      hexProperties[i].opacity =
+        hexProperties[i].opacity < 1 && focus == i
+          ? hexProperties[i].opacity + 0.08
+          : hexProperties[i].opacity > 1 && focus == i
+          ? 1
+          : hexProperties[i].opacity;
+
+      focus =
+        hexProperties[i].opacity <= 0 && focus == i && i < 6
+          ? focus
+          : hexProperties[i].opacity >= 1 && focus == i && i < 6
+          ? focus + 1
+          : 0;
+
+      expand = hexProperties[6].opacity >= 1 ? false : true;
+    });
+  }
   hexGrid.coordinates.forEach((center, i) => {
-    hexProperties[i].r =
-      hexProperties[i].r >= hexRadius / 2 && focus == i
-        ? hexProperties[i].r - 3
-        : hexProperties[i].r;
-
-    hexProperties[i].opacity =
-      hexProperties[i].opacity > 0 && focus == i
-        ? hexProperties[i].opacity - 0.08
-        : hexProperties[i].opacity < 0.5 && focus == i
-        ? 0
-        : hexProperties[i].opacity;
-
-    focus =
-      hexProperties[i].r >= hexRadius / 2 && focus == i
-        ? focus
-        : hexProperties[i].r < hexRadius / 2 && focus == i
-        ? focus + 1
-        : focus == 7 && hexProperties[6].opacity == 0
-        ? 0
-        : focus;
-    //log(focus);
     gridCoordinates.push(
       generateHexByRadius(center.x, center.y, hexProperties[i])
     );
