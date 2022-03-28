@@ -6,14 +6,15 @@ const cy = canvas.height / 2 + 1;
 const hexSideLength = 55;
 const hexAngle = toRadians(30);
 let hexRadius = 85;
-let radius = [
-  { r: hexRadius, focus: true },
-  { r: hexRadius, focus: false },
-  { r: hexRadius, focus: false },
-  { r: hexRadius, focus: false },
-  { r: hexRadius, focus: false },
-  { r: hexRadius, focus: false },
-  { r: hexRadius, focus: false },
+let focus = 0;
+let hexProperties = [
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
+  { r: hexRadius, opacity: 1 },
 ];
 let hexArray = [];
 let hexSpaceBetween = 12;
@@ -76,11 +77,30 @@ function toRadians(angle) {
 function drawHexagon() {
   let gridCoordinates = [];
   hexGrid.coordinates.forEach((center, i) => {
-    radius[i].r =
-      radius[i].r > hexRadius / 2 && radius[i].focus
-        ? radius[i].r - 1
-        : radius[i].r;
-    gridCoordinates.push(generateHexByRadius(center.x, center.y, radius[i].r));
+    hexProperties[i].r =
+      hexProperties[i].r >= hexRadius / 2 && focus == i
+        ? hexProperties[i].r - 3
+        : hexProperties[i].r;
+
+    hexProperties[i].opacity =
+      hexProperties[i].opacity > 0 && focus == i
+        ? hexProperties[i].opacity - 0.08
+        : hexProperties[i].opacity < 0.5 && focus == i
+        ? 0
+        : hexProperties[i].opacity;
+
+    focus =
+      hexProperties[i].r >= hexRadius / 2 && focus == i
+        ? focus
+        : hexProperties[i].r < hexRadius / 2 && focus == i
+        ? focus + 1
+        : focus == 7 && hexProperties[6].opacity == 0
+        ? 0
+        : focus;
+    //log(focus);
+    gridCoordinates.push(
+      generateHexByRadius(center.x, center.y, hexProperties[i])
+    );
   });
 
   gridCoordinates.forEach((pathpoints) => {
@@ -112,9 +132,7 @@ function render() {
 
 function drawHexArray() {
   hexArray.forEach((hex, i) => {
-    // if (i == 3) {
-    //   ctx.globalAlpha = 0.5;
-    // }
+    ctx.globalAlpha = hexProperties[i].opacity;
     ctx.strokeStyle = "#fff";
     ctx.strokeWidth = 1;
     ctx.stroke(hex.path);
@@ -123,6 +141,7 @@ function drawHexArray() {
       ctx.shadowColor = "#fff";
       ctx.shadowBlur = 11;
     }
+
     let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, "rgba(252,252,252,1)");
     gradient.addColorStop(1, "rgba(0,191,254,1)");
@@ -130,12 +149,16 @@ function drawHexArray() {
     ctx.fill(hex.path);
     // ctx.globalAlpha = 1;
     ctx.font = "48px serif";
-    ctx.fillStyle = "#000";
-    ctx.fillText(i, hex.center.x, hex.center.y);
+    // ctx.fillStyle = "#000";
+    // ctx.fillText(i, hex.center.x, hex.center.y);
+    ctx.globalAlpha = 1;
   });
 }
 
-function generateHexByRadius(cx, cy, r) {
+function generateHexByRadius(cx, cy, hexProperties) {
+  let r = hexProperties.r;
+  let opacity = hexProperties.opacity;
+
   let calcX = (angle) => {
     return r * Math.cos(toRadians(angle)) + cx;
   };
