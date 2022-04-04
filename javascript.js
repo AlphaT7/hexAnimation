@@ -3,10 +3,16 @@ canvas.width = 691;
 canvas.height = 691;
 const cx = canvas.width / 2 + 1;
 const cy = canvas.height / 2 + 1;
-const hexSideLength = 55;
 const hexAngle = toRadians(30);
-let hexRadius = 85;
+let hexRadius = 55;
 let focus = 0;
+let arcArray = [
+  { start: 40, end: 160 },
+  { start: 215, end: 320 },
+  { start: 35, end: 120 },
+  { start: 110, end: 195 },
+  { start: 210, end: 275 },
+];
 let expand = false;
 let hexProperties = [
   { r: hexRadius, opacity: 1, expand: false },
@@ -18,7 +24,7 @@ let hexProperties = [
   { r: hexRadius, opacity: 1, expand: false },
 ];
 let hexArray = [];
-let hexSpaceBetween = 12;
+let hexSpaceBetween = 7;
 const ctx = canvas.getContext("2d");
 const log = console.log.bind(console);
 
@@ -81,12 +87,12 @@ function drawHexagon() {
     hexGrid.coordinates.forEach((center, i) => {
       hexProperties[i].r =
         hexProperties[i].r >= hexRadius / 2 && focus == i
-          ? hexProperties[i].r - 3
+          ? hexProperties[i].r - 0.5
           : hexProperties[i].r;
 
       hexProperties[i].opacity =
         hexProperties[i].opacity > 0 && focus == i
-          ? hexProperties[i].opacity - 0.08
+          ? hexProperties[i].opacity - 0.05
           : hexProperties[i].opacity < 0.5 && focus == i
           ? 0
           : hexProperties[i].opacity;
@@ -104,22 +110,30 @@ function drawHexagon() {
     hexGrid.coordinates.forEach((center, i) => {
       hexProperties[i].r =
         hexProperties[i].r < hexRadius && focus == i
-          ? hexProperties[i].r + 3
+          ? hexProperties[i].r + 1
           : hexProperties[i].r;
 
       hexProperties[i].opacity =
         hexProperties[i].opacity < 1 && focus == i
-          ? hexProperties[i].opacity + 0.08
+          ? hexProperties[i].opacity + 0.05
           : hexProperties[i].opacity > 1 && focus == i
           ? 1
           : hexProperties[i].opacity;
 
       focus =
-        hexProperties[i].opacity <= 0 && focus == i && i < 6
+        hexProperties[i].opacity < 0 && focus == i && i < 6
           ? focus
-          : hexProperties[i].opacity >= 1 && focus == i && i < 6
+          : hexProperties[i].opacity > 0 &&
+            hexProperties[i].r == hexRadius &&
+            focus == i &&
+            i < 6
           ? focus + 1
-          : 0;
+          : hexProperties[i].opacity >= 1 &&
+            hexProperties[i].r >= hexRadius &&
+            focus == i &&
+            i == 6
+          ? 0
+          : focus;
 
       expand = hexProperties[6].opacity >= 1 ? false : true;
     });
@@ -154,15 +168,13 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   hexArray.length = 0;
   drawHexagon();
+  drawCircleArc();
   window.requestAnimationFrame(render);
 }
 
 function drawHexArray() {
   hexArray.forEach((hex, i) => {
     ctx.globalAlpha = hexProperties[i].opacity;
-    ctx.strokeStyle = "#fff";
-    ctx.strokeWidth = 1;
-    ctx.stroke(hex.path);
 
     for (let i = 0; i <= 0; i++) {
       ctx.shadowColor = "#fff";
@@ -230,6 +242,33 @@ function generateHexByRadius(cx, cy, hexProperties) {
     },
   };
   return hex;
+}
+
+function drawCircleArc() {
+  arcArray.forEach((arc, i) => {
+    let radius = {
+      0: hexRadius * 4.75,
+      1: hexRadius * 4.5,
+      2: hexRadius * 4,
+      3: hexRadius * 3.75,
+      4: hexRadius * 5,
+    };
+    let r = radius[i];
+    arc.start =
+      i == 2 ? (arc.start += 1.5) : i == 4 ? arc.start + 1.5 : arc.start;
+    arc.end = i == 2 ? (arc.end += 1.5) : i == 4 ? arc.end + 1.5 : arc.end;
+    ctx.lineWidth = i == 2 ? 5 : i == 0 ? 3 : i == 4 ? 5 : 1;
+    for (let i = 0; i <= 4; i++) {
+      ctx.shadowColor = "#fff";
+      ctx.shadowBlur = 13;
+    }
+    arc.start++;
+    arc.end++;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, toRadians(arc.start), toRadians(arc.end));
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  });
 }
 
 render();
