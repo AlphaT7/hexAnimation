@@ -1,6 +1,8 @@
-FROM node:12-alpine
-RUN apk add --no-cache python2 g++ make
+FROM alpine:latest
+RUN apk add --update nodejs npm
+RUN apk add git
 WORKDIR /app
-COPY . .
-RUN yarn install --production
+RUN cd /app
+RUN git clone https://github.com/AlphaT7/hexAnimation.git .
+RUN npm install snowpack
 EXPOSE 8080
