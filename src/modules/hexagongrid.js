@@ -6,14 +6,14 @@ export default class HexagonGrid {
     this.centerX = canvas.centerX;
     this.centerY = canvas.centerY;
     this.hexagonExpand = true;
-    this.hexagonExpandRate = 2.5;
-    this.hexagonMaximumRadius = canvas.hexRadius;
+    this.hexagonExpandRate = 1.8;
+    this.hexagonMaximumRadius = canvas.hexagonMaximumRadius;
     // this.opacityStep must be relative to its negative start value
     // and it must also increase at a rate relative to the number of frames
     // it takes for the expanding hexagons to reach this.hexagonMaximumRadius;
     this.opacityStep =
       1.5 / (this.hexagonMaximumRadius / this.hexagonExpandRate);
-    this.spaceBetweenHexagons = 7;
+    this.spaceBetweenHexagons = 15;
     this.hexagonFocus = 0;
     this.updateHexagon = false;
 
@@ -97,7 +97,7 @@ export default class HexagonGrid {
       setTimeout(() => {
         this.hexagonExpand = true;
         this.updateHexagon = true;
-      }, 500);
+      }, 750);
     } else {
       this.updateHexagon = true;
     }
@@ -105,7 +105,7 @@ export default class HexagonGrid {
       setTimeout(() => {
         this.hexagonExpand = false;
         this.updateHexagon = true;
-      }, 500);
+      }, 750);
     } else this.updateHexagon = true;
     if (!this.updateHexagon) return;
 
@@ -174,10 +174,13 @@ export default class HexagonGrid {
       );
 
       gradient.addColorStop(0, "rgba(252,252,252,1)");
-      gradient.addColorStop(1, "rgba(0,191,254,1)");
+      gradient.addColorStop(0, "rgba(147, 226, 253, 1)");
+      // gradient.addColorStop(1, "rgba(0,191,254,1)");
 
       ctx.fillStyle = gradient;
       ctx.fill(hexagon.path);
+      ctx.strokeStyle = "#fff";
+      ctx.stroke(hexagon.path)
       ctx.globalAlpha = 1;
     });
   }

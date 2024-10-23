@@ -2,7 +2,7 @@ export default class Circles {
   constructor({ canvas }) {
     this.centerX = canvas.centerX;
     this.centerY = canvas.centerY;
-    this.radius = canvas.hexRadius;
+    this.radius = canvas.hexagonMaximumRadius;
     this.arcArray = [
       {
         start: 40,
@@ -48,10 +48,7 @@ export default class Circles {
       ctx.shadowColor = "#fff";
       ctx.strokeStyle = "#fff";
       ctx.lineWidth = arc.width;
-
-      for (let i = 0; i < 5; i++) {
-        ctx.shadowBlur = 5;
-      }
+      ctx.shadowBlur = 5;
       ctx.beginPath();
 
       ctx.arc(
