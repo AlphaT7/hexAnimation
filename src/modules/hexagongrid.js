@@ -92,7 +92,7 @@ export default class HexagonGrid {
     this.hexagonArray = [];
 
     // set a brief delay between changing the "this.hexagonExpand" integer polarity
-    this.updateHexagon = false;
+    // this.updateHexagon = false;
     if (this.hexagonProperties[0].radius <= 0) {
       setTimeout(() => {
         this.hexagonExpand = true;
@@ -101,12 +101,12 @@ export default class HexagonGrid {
     } else {
       this.updateHexagon = true;
     }
-    if (this.hexagonProperties[6].radius >= this.hexagonMaximumRadius) {
-      setTimeout(() => {
-        this.hexagonExpand = false;
-        this.updateHexagon = true;
-      }, 750);
-    } else this.updateHexagon = true;
+    // if (this.hexagonProperties[6].radius >= this.hexagonMaximumRadius) {
+    //   setTimeout(() => {
+    //     this.hexagonExpand = false;
+    //     this.updateHexagon = true;
+    //   }, 750);
+    // } else this.updateHexagon = true;
     if (!this.updateHexagon) return;
 
     // the update functionality;
@@ -140,7 +140,7 @@ export default class HexagonGrid {
         if (hexagon.radius <= 0 && this.hexagonFocus == i && i > 0)
           this.hexagonFocus--;
 
-        // calculate the individual hexagon opacity while expanding;
+        // calculate the individual hexagon opacity while contracting;
         if (hexagon.opacity > -0.2 && this.hexagonFocus == i) {
           hexagon.opacity -= this.opacityStep;
         }
@@ -180,7 +180,8 @@ export default class HexagonGrid {
       ctx.fillStyle = gradient;
       ctx.fill(hexagon.path);
       ctx.strokeStyle = "#fff";
-      ctx.stroke(hexagon.path)
+      ctx.lineWidth = 0.25;
+      ctx.stroke(hexagon.path);
       ctx.globalAlpha = 1;
     });
   }
