@@ -92,7 +92,7 @@ export default class HexagonGrid {
     this.hexagonArray = [];
 
     // set a brief delay between changing the "this.hexagonExpand" integer polarity
-    // this.updateHexagon = false;
+    this.updateHexagon = false;
     if (this.hexagonProperties[0].radius <= 0) {
       setTimeout(() => {
         this.hexagonExpand = true;
@@ -101,12 +101,12 @@ export default class HexagonGrid {
     } else {
       this.updateHexagon = true;
     }
-    // if (this.hexagonProperties[6].radius >= this.hexagonMaximumRadius) {
-    //   setTimeout(() => {
-    //     this.hexagonExpand = false;
-    //     this.updateHexagon = true;
-    //   }, 750);
-    // } else this.updateHexagon = true;
+    if (this.hexagonProperties[6].radius >= this.hexagonMaximumRadius) {
+      setTimeout(() => {
+        this.hexagonExpand = false;
+        this.updateHexagon = true;
+      }, 750);
+    } else this.updateHexagon = true;
     if (!this.updateHexagon) return;
 
     // the update functionality;
