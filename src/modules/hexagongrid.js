@@ -6,13 +6,18 @@ export default class HexagonGrid {
     this.centerX = canvas.centerX;
     this.centerY = canvas.centerY;
     this.hexagonExpand = true;
-    this.hexagonExpandRate = 1.8;
+    this.hexagonExpandRate = 1.95;
     this.hexagonMaximumRadius = canvas.hexagonMaximumRadius;
-    // this.opacityStep must be relative to its negative start value
-    // and it must also increase at a rate relative to the number of frames
-    // it takes for the expanding hexagons to reach this.hexagonMaximumRadius;
-    this.opacityStep =
+
+    // this.opacityStepUp and this.opacityStepDown must be relative to its
+    // negative start value and it must also increase at a rate relative
+    // to the number of frames it takes for the expanding hexagons to reach
+    // this.hexagonMaximumRadius length;
+
+    this.opacityStepUp =
       1.5 / (this.hexagonMaximumRadius / this.hexagonExpandRate);
+    this.opacityStepDown =
+      1 / (this.hexagonMaximumRadius / this.hexagonExpandRate);
     this.spaceBetweenHexagons = 15;
     this.hexagonFocus = 0;
     this.updateHexagon = false;
@@ -129,7 +134,7 @@ export default class HexagonGrid {
 
         // calculate the individual hexagon opacity while expanding;
         if (hexagon.opacity < 1 && this.hexagonFocus == i) {
-          hexagon.opacity += this.opacityStep;
+          hexagon.opacity += this.opacityStepUp;
         }
       } else {
         // calculate the individual hexagon radius while contracting;
@@ -141,8 +146,10 @@ export default class HexagonGrid {
           this.hexagonFocus--;
 
         // calculate the individual hexagon opacity while contracting;
-        if (hexagon.opacity > -0.2 && this.hexagonFocus == i) {
-          hexagon.opacity -= this.opacityStep;
+        if (hexagon.opacity > 0 && this.hexagonFocus == i) {
+          hexagon.opacity -= this.opacityStepDown;
+        } else {
+          hexagon.opacity = -0.5;
         }
       }
 
